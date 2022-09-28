@@ -1,4 +1,5 @@
 const express = require("express");
+const dotenv = require('dotenv').config();
 const mongoose = require("mongoose");
 const multer = require('multer');
 const path = require('path');
@@ -6,18 +7,20 @@ const path = require('path');
 const app = express();
 
 const sauceRoutes = require('./routes/sauceRoutes');
-const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 // CONNECT TO MONGODB
-mongoose.connect('mongodb+srv://luc:Dazmango42.@mango-cluter.tnwr2gb.mongodb.net/?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+mongoose.connect(process.env.MONGO_DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+})
+.then(() => console.log('Connexion à MongoDB réussie !'))
+.catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-// AVOID CORS ERRORS  
+// ALLOW CROSS-ORIGIN REQUESTS 
+// Then handle next middleware
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -28,8 +31,9 @@ app.use((req, res, next) => {
 // USE EXPRESS EXTENSIONS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('./public'));
 
 app.use('/api/sauces', sauceRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
