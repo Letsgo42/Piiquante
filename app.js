@@ -11,7 +11,7 @@ const userRoutes = require('./routes/userRoutes');
 
 
 // CONNECT TO MONGODB
-mongoose.connect(process.env.MONGO_DB, {
+mongoose.connect(process.env.MONGO_DB, { 
   useNewUrlParser: true,
   useUnifiedTopology: true 
 })
@@ -28,10 +28,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// USE EXPRESS EXTENSIONS
+// USE EXPRESS MIDDLEWARES
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('./public'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
