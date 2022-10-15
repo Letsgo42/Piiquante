@@ -4,7 +4,6 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer');
 const sauceCtrl = require('../controllers/sauceController');
-const app = require('../app');
 
 
 router.get('/', sauceCtrl.getAllSauces);

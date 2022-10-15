@@ -1,8 +1,9 @@
+//IMPORT MODULES
 const express = require("express");
-require('dotenv').config();
 const mongoose = require("mongoose");
 const path = require('path');
-const helmet =  require('helmet');
+const helmet = require('helmet');
+require('dotenv').config();
 
 const app = express();
 
