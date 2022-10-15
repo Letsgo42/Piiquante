@@ -1,13 +1,14 @@
 const express = require("express");
-const dotenv = require('dotenv').config();
+require('dotenv').config();
 const mongoose = require("mongoose");
-const multer = require('multer');
 const path = require('path');
+const helmet =  require('helmet');
 
 const app = express();
 
 const sauceRoutes = require('./routes/sauceRoutes');
 const userRoutes = require('./routes/userRoutes');
+const limiter = require('./middleware/rateLimit');
 
 
 // CONNECT TO MONGODB
@@ -32,6 +33,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(helmet());
+app.use(limiter);
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);

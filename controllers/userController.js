@@ -1,15 +1,26 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
+const passwordValidator = require('password-validator');
+
+// SET SCHEMA FOR PASSWORD VALIDATOR
+const passwordSchema = new passwordValidator();
+passwordSchema
+.is().min(6)
+.is().max(100)
+// .has().uppercase()
+// .has().lowercase()
+// .has().digits()
+// .has().symbols()
+// .has().not().spaces();
 
 
 // POST NEW USER : api/auth/signup
 exports.registerUser = (req, res, next) => {
-  // if (!req.body.email || !req.body.password) {
-  //   return res.status(400).send({ message: "Please fill up Email and Password" });
-  // }
- 
-  console.log(req.body.email)
+  if (!passwordSchema.validate(req.body.password)) {
+    return res.status(400).json({ message: 'Invalid Password'});
+  }
+  
   bcrypt.hash(req.body.password, 10)
   .then(hashPassword => {
     const user = new User({

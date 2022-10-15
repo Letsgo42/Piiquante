@@ -12,10 +12,8 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   }
-},
-{
-  timestamps: true
 });
+
 
 userSchema.plugin(uniqueValidator);
 userSchema.plugin(mongodbErrorHandler);

@@ -12,7 +12,6 @@ exports.getAllSauces = (req, res, next) => {
 
 // GET ONE SAUCE: api/sauces/:id
 exports.getOneSauce = (req, res, next) => {
-  //console.log(req.params.id);
   Sauce.findOne({ _id: req.params.id })
   .then(sauce => res.status(200).json(sauce))
   .catch(error => res.status(404).json( { error } ));
@@ -29,14 +28,12 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   delete sauceObject.userId;
 
-  //console.log(sauceObject);
   const sauce = new Sauce({
     ...sauceObject,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
   });
 
-  //console.log(sauce);
   sauce.save()
   .then(() => res.status(201).json( { message: 'Sauce enregistrée' } ))
   .catch(error => res.status(400).json( { error } ));
@@ -45,10 +42,10 @@ exports.createSauce = (req, res, next) => {
 
 // PUT // MODIFY SAUCE: api/sauces/:id
 exports.updateSauce = (req, res, next) => {
-  const sauceObject = req.file ? {
+  const sauceObject = !req.file ? req.body : { 
     ...JSON.parse(req.body.sauce),
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}}`
-  } : { ...req.body };
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+  };
 
   delete sauceObject.userId;
   Sauce.findById(req.params.id)
@@ -105,14 +102,12 @@ exports.deleteSauce = (req, res, next) => {
           sauce.usersLiked.push(req.body.userId);
           sauce.likes += 1;
         }
-        // console.log(sauce.userLiked);
         break;
       case -1:
         if (sauce.usersDisliked == 0 || (!sauce.usersDisliked.includes(req.body.userId)) ) {
           sauce.usersDisliked.push(req.body.userId);
           sauce.dislikes += 1;
         }
-        // console.log(sauce.usersDisliked);
         break;
       case 0:
         if (removeItem(sauce.usersLiked, req.body.userId) == 0) {
@@ -120,18 +115,10 @@ exports.deleteSauce = (req, res, next) => {
         } else if (removeItem(sauce.usersDisliked, req.body.userId) == 0) {
           sauce.dislikes -= 1;
         }
-        // console.log(sauce.usersLiked);
-        // console.log(sauce.usersDisliked);
         break;
     }
-    const sauceObject = {
-      likes: sauce.likes,
-      dislikes: sauce.dislikes,
-      usersLiked: sauce.usersLiked,
-      usersDisliked: sauce.usersDisliked,
-    };
-    // console.log(sauceObject);
-    Sauce.updateOne({ _id: req.params.id }, {...sauceObject, })
+    
+    Sauce.updateOne({ _id: req.params.id }, sauce)
     .then(() => res.status(201).json({ message: 'Like enregistré' }))
     .catch(error => res.status(404).json({ error }));
   })

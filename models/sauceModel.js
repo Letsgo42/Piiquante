@@ -15,5 +15,6 @@ const sauceSchema = mongoose.Schema({
   userId: {type: String, required: true}
 });
 
+
 sauceSchema.plugin(mongodbErrorHandler);
 module.exports = mongoose.model('Sauce', sauceSchema);
